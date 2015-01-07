@@ -24,7 +24,7 @@ public class DfchTestOutputOutput implements MessageOutput
 {
     private static final String DF_PLUGIN_NAME = "d-fens SCRIPT Output";
     private static final String DF_PLUGIN_HUMAN_NAME = "biz.dfch.java.graylog2.plugin.output.execscript1";
-    private static final String DF_PLUGIN_DOC_LINK = "https://www.github.com/dfch/";
+    private static final String DF_PLUGIN_DOC_LINK = "https://github.com/dfch/biz.dfch.java.graylog2.plugin.output.execscript1";
 
     private static final String DF_SCRIPT_ENGINE = "DF_SCRIPT_ENGINE";
     private static final String DF_SCRIPT_PATH_AND_NAME = "DF_SCRIPT_PATH_AND_NAME";
