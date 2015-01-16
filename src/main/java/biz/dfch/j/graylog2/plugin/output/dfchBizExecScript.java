@@ -13,6 +13,9 @@ import org.graylog2.plugin.configuration.fields.TextField;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.outputs.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This is the plugin. Your class should implement one of the existing plugin
  * interfaces. (i.e. AlarmCallback, MessageInput, MessageOutput)
@@ -36,21 +39,23 @@ public class dfchBizExecScript implements MessageOutput
     private ScriptContext _scriptContext;
     private File _file;
 
+    private static final Logger LOG = LoggerFactory.getLogger(dfchBizExecScript.class);
+
     @Override
     public void initialize(final Configuration configuration)
     {
         try
         {
             String s = "*** " + DF_PLUGIN_NAME + "::initialize()";
-            System.out.println(s);
+            LOG.trace(s);
 
             _configuration = configuration;
             _isRunning = true;
 
-            System.out.printf("DF_SCRIPT_ENGINE         : %s\r\n", _configuration.getString("DF_SCRIPT_ENGINE"));
-            System.out.printf("DF_SCRIPT_PATH_AND_NAME  : %s\r\n", _configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
-            System.out.printf("DF_DISPLAY_SCRIPT_OUTPUT : %b\r\n", _configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT"));
-            System.out.printf("DF_SCRIPT_CACHE_CONTENTS : %b\r\n", _configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"));
+            LOG.trace("DF_SCRIPT_ENGINE         : %s\r\n", _configuration.getString("DF_SCRIPT_ENGINE"));
+            LOG.trace("DF_SCRIPT_PATH_AND_NAME  : %s\r\n", _configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
+            LOG.trace("DF_DISPLAY_SCRIPT_OUTPUT : %b\r\n", _configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT"));
+            LOG.trace("DF_SCRIPT_CACHE_CONTENTS : %b\r\n", _configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"));
 
             _scriptEngineManager = new ScriptEngineManager();
             _file = new File(_configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
@@ -60,7 +65,7 @@ public class dfchBizExecScript implements MessageOutput
         {
             _isRunning = false;
 
-            System.out.println("*** " + DF_PLUGIN_NAME + "::write() - Exception");
+            LOG.error("*** " + DF_PLUGIN_NAME + "::write() - Exception");
             ex.printStackTrace();
         }
 
@@ -100,12 +105,13 @@ public class dfchBizExecScript implements MessageOutput
             if(_configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT"))
             {
                 System.out.printf("%s\r\n", stringWriter.toString());
+                LOG.trace("%s\r\n", stringWriter.toString());
             }
 
         }
         catch(Exception ex)
         {
-            System.out.println("*** " + DF_PLUGIN_NAME + "::write() - Exception");
+            LOG.error("*** " + DF_PLUGIN_NAME + "::write() - Exception");
             ex.printStackTrace();
         }
 
