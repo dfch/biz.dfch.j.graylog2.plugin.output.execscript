@@ -23,7 +23,6 @@ This project is using Maven and requires Java 7 or higher.
 Other Plugins
 -------------
 
-* [biz.dfch.j.graylog2.plugin.alarm.execscript](/dfch/biz.dfch.j.graylog2.plugin.alarm.execscript) 
+* [biz.dfch.j.graylog2.plugin.alarm.execscript](https://github.com/dfch/biz.dfch.j.graylog2.plugin.alarm.execscript) 
   
   This is an [AlarmCallback](https://www.graylog2.org/resources/documentation/general/plugins) plugin that does essentially the same as the output plugin, but lets you run scripts based on alarm conditions (similar to [graylog2-plugin-alarmcallback-exec](https://github.com/lennartkoopmann/graylog2-plugin-alarmcallback-exec))
-
