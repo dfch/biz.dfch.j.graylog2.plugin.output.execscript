@@ -11,6 +11,8 @@ See [Creating a Graylog2 Output Plugin](http://d-fens.ch/2015/01/07/howto-creati
 
 You can [download the binary](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/files) [![Build Status](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/status.png)](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/latest) at our [drone.io](https://drone.io/github.com/dfch) account, which gets built every time we commit something to the master branch of the repository.
 
+*Currently testing only* [ ![Codeship Status for dfch/biz.dfch.j.graylog2.plugin.output.execscript](https://codeship.com/projects/4f851450-8075-0132-3e61-4e80f7268ba4/status?branch=master)](https://codeship.com/projects/57484)
+
 Getting started for users
 -------------------------
 
