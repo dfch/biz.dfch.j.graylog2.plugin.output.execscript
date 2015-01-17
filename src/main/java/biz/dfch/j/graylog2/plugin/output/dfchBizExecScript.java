@@ -114,8 +114,6 @@ public class dfchBizExecScript implements MessageOutput
             LOG.error("*** " + DF_PLUGIN_NAME + "::write() - Exception");
             ex.printStackTrace();
         }
-
-        return;
     }
 
     @Override
@@ -127,8 +125,6 @@ public class dfchBizExecScript implements MessageOutput
         {
             write(msg);
         }
-
-        return;
     }
 
     @Override
