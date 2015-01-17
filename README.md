@@ -9,7 +9,7 @@ This Graylog2 Output Plugin lets you run arbitrary scripts on a Graylog2 node.
 
 See [Creating a Graylog2 Output Plugin](http://d-fens.ch/2015/01/07/howto-creating-a-graylog2-output-plugin/) for further description and examples on how to use the plugin.
 
-You can [download the binary](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/files) at our [drone.io](https://drone.io/github.com/dfch) account, which gets built every time we commit something to the master branch of the repository.
+You can [download the binary](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/files) [![Build Status](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/status.png)](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/latest) at our [drone.io](https://drone.io/github.com/dfch) account, which gets built every time we commit something to the master branch of the repository.
 
 Getting started for users
 -------------------------
