@@ -34,9 +34,9 @@ public class dfchBizExecScript implements MessageOutput
     private boolean _isRunning = false;
     private Configuration _configuration;
 
-    private ScriptEngineManager _scriptEngineManager;
-    private ScriptEngine _scriptEngine;
-    private ScriptContext _scriptContext;
+    private static final ScriptEngineManager _scriptEngineManager = new ScriptEngineManager();
+    private static ScriptEngine _scriptEngine;
+    private static ScriptContext _scriptContext;
     private File _file;
 
     private static final Logger LOG = LoggerFactory.getLogger(dfchBizExecScript.class);
@@ -57,8 +57,9 @@ public class dfchBizExecScript implements MessageOutput
             LOG.trace("DF_DISPLAY_SCRIPT_OUTPUT : %b\r\n", _configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT"));
             LOG.trace("DF_SCRIPT_CACHE_CONTENTS : %b\r\n", _configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"));
 
-            _scriptEngineManager = new ScriptEngineManager();
             _file = new File(_configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
+            _scriptEngine = _scriptEngineManager.getEngineByName(_configuration.getString("DF_SCRIPT_ENGINE"));
+            _scriptContext = _scriptEngine.getContext();
 
         }
         catch(Exception ex)
@@ -89,8 +90,6 @@ public class dfchBizExecScript implements MessageOutput
 
         try
         {
-            _scriptEngine = _scriptEngineManager.getEngineByName(_configuration.getString("DF_SCRIPT_ENGINE"));
-            _scriptContext = _scriptEngine.getContext();
             StringWriter stringWriter = new StringWriter();
             _scriptContext.setWriter(stringWriter);
             _scriptEngine.put("message", msg);
