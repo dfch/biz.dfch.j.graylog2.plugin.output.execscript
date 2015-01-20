@@ -148,7 +148,7 @@ public class dfchBizExecScript implements MessageOutput
                                 ,
                                 "Script Path"
                                 ,
-                                "/opt/graylog2/plugin/helloworld.js"
+                                "/opt/graylog2/plugin/bizDfchMessageOutput.js"
                                 ,
                                 "Specify the full path and name of the script to execute."
                                 ,
