@@ -35,8 +35,9 @@ public class dfchBizExecScript implements MessageOutput
     private Configuration _configuration;
 
     private static final ScriptEngineManager _scriptEngineManager = new ScriptEngineManager();
-    private static ScriptEngine _scriptEngine;
-    private static ScriptContext _scriptContext;
+    private ScriptEngine _scriptEngine;
+    private ScriptContext _scriptContext;
+    StringWriter stringWriter = new StringWriter();
     private File _file;
 
     private static final Logger LOG = LoggerFactory.getLogger(dfchBizExecScript.class);
@@ -66,7 +67,7 @@ public class dfchBizExecScript implements MessageOutput
         {
             _isRunning = false;
 
-            LOG.error("*** " + DF_PLUGIN_NAME + "::write() - Exception");
+            LOG.error("*** " + DF_PLUGIN_NAME + "::write() - Exception\r\n" + ex.getMessage() + "\r\n");
             ex.printStackTrace();
         }
     }
@@ -86,11 +87,14 @@ public class dfchBizExecScript implements MessageOutput
     @Override
     public void write(Message msg) throws Exception
     {
-        if(!_isRunning) return;
+        if(!_isRunning) 
+        {
+            return;
+        }
 
         try
         {
-            StringWriter stringWriter = new StringWriter();
+            stringWriter.getBuffer().setLength(0);
             _scriptContext.setWriter(stringWriter);
             _scriptEngine.put("message", msg);
             if(!_configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"))
@@ -148,7 +152,7 @@ public class dfchBizExecScript implements MessageOutput
                                 ,
                                 "Script Path"
                                 ,
-                                "/opt/graylog2/plugin/bizDfchMessageOutput.js"
+                                "/opt/graylog2/plugin/bizDfchMessageOutputScript.js"
                                 ,
                                 "Specify the full path and name of the script to execute."
                                 ,
