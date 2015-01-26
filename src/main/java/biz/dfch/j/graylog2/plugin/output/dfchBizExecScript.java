@@ -37,7 +37,7 @@ public class dfchBizExecScript implements MessageOutput
     private static final ScriptEngineManager _scriptEngineManager = new ScriptEngineManager();
     private ScriptEngine _scriptEngine;
     private ScriptContext _scriptContext;
-    StringWriter stringWriter = new StringWriter();
+    StringWriter _stringWriter = new StringWriter();
     private File _file;
 
     private static final Logger LOG = LoggerFactory.getLogger(dfchBizExecScript.class);
@@ -94,8 +94,8 @@ public class dfchBizExecScript implements MessageOutput
 
         try
         {
-            stringWriter.getBuffer().setLength(0);
-            _scriptContext.setWriter(stringWriter);
+            _stringWriter.getBuffer().setLength(0);
+            _scriptContext.setWriter(_stringWriter);
             _scriptEngine.put("message", msg);
             if(!_configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"))
             {
@@ -105,8 +105,8 @@ public class dfchBizExecScript implements MessageOutput
             _scriptEngine.eval(_reader);
             if(_configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT"))
             {
-                System.out.printf("%s\r\n", stringWriter.toString());
-                LOG.trace("%s\r\n", stringWriter.toString());
+                System.out.printf("%s\r\n", _stringWriter.toString());
+                LOG.trace("%s\r\n", _stringWriter.toString());
             }
 
         }
