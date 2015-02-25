@@ -1,27 +1,33 @@
 package biz.dfch.j.graylog2.plugin.output;
 
+import com.google.inject.multibindings.MapBinder;
+import org.graylog2.plugin.PluginConfigBean;
 import org.graylog2.plugin.PluginModule;
+import org.graylog2.plugin.outputs.MessageOutput;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Extend the PluginModule abstract class here to add you plugin to the system.
  */
 public class dfchBizExecScriptModule extends PluginModule {
+    /**
+     * Returns all configuration beans required by this plugin.
+     *
+     * Implementing this method is optional. The default method returns an empty {@link Set}.
+     */
     @Override
-    protected void configure() {
-        registerPlugin(dfchBizExecScriptMetadata.class);
+    public Set<? extends PluginConfigBean> getConfigBeans()
+    {
+        return Collections.emptySet();
+    }
 
-        /* Register your plugin types here.
-         *
-         * Examples:
-         *
-         * addMessageInput(Class<? extends MessageInput>);
-         * addMessageFilter(Class<? extends MessageFilter>);
-         * addMessageOutput(Class<? extends MessageOutput>);
-         * addPeriodical(Class<? extends Periodical>);
-         * addAlarmCallback(Class<? extends AlarmCallback>);
-         * addInitializer(Class<? extends Service>);
-         */
-        addMessageOutput(dfchBizExecScript.class);
+    @Override
+    protected void configure()
+    {
+        final MapBinder<String, MessageOutput.Factory<? extends MessageOutput>> outputMapBinder = outputsMapBinder();
+        installOutput(outputMapBinder, dfchBizExecScript.class, dfchBizExecScript.Factory.class);
     }
 }
 

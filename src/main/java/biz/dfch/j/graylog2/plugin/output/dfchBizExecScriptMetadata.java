@@ -1,8 +1,10 @@
 package biz.dfch.j.graylog2.plugin.output;
 
 import org.graylog2.plugin.PluginMetaData;
+import org.graylog2.plugin.ServerStatus;
 import org.graylog2.plugin.Version;
 import java.net.URI;
+import java.util.Set;
 
 /**
  * Implement the PluginMetaData interface here.
@@ -27,7 +29,7 @@ public class dfchBizExecScriptMetadata implements PluginMetaData
     @Override
     public URI getURL()
     {
-        return URI.create("http://www.d-fens.ch");
+        return URI.create("http://d-fens.ch");
     }
     @Override
     public Version getVersion()
@@ -37,12 +39,18 @@ public class dfchBizExecScriptMetadata implements PluginMetaData
     @Override
     public String getDescription()
     {
-        return "d-fens SCRIPT Output. With this plugin you can call arbitrary scripts from within Graylog2.";
+        return "d-fens SCRIPT Output. With this plugin you can call arbitrary scripts from within Graylog2";
     }
     @Override
     public Version getRequiredVersion()
     {
-        return new Version(0, 90, 0);
+        return new Version(1, 0, 0);
+    }
+
+    @Override
+    public Set<ServerStatus.Capability> getRequiredCapabilities()
+    {
+        return java.util.EnumSet.of(ServerStatus.Capability.SERVER);
     }
 }
 

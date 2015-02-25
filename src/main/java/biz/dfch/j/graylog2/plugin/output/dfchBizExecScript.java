@@ -2,9 +2,13 @@ package biz.dfch.j.graylog2.plugin.output;
 
 import java.io.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.inject.Inject;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+
+import com.google.inject.assistedinject.Assisted;
 import org.graylog2.plugin.configuration.Configuration;
 import org.graylog2.plugin.configuration.ConfigurationRequest;
 import org.graylog2.plugin.configuration.fields.BooleanField;
@@ -13,6 +17,8 @@ import org.graylog2.plugin.configuration.fields.TextField;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.outputs.*;
 
+import org.graylog2.plugin.streams.Stream;
+import org.msgpack.annotation.NotNullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,16 +29,15 @@ import org.slf4j.LoggerFactory;
 public class dfchBizExecScript implements MessageOutput
 {
     private static final String DF_PLUGIN_NAME = "d-fens SCRIPT Output";
-    private static final String DF_PLUGIN_HUMAN_NAME = "biz.dfch.j.graylog2.plugin.output.execscript";
-    private static final String DF_PLUGIN_DOC_LINK = "https://github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript";
 
     private static final String DF_SCRIPT_ENGINE = "DF_SCRIPT_ENGINE";
     private static final String DF_SCRIPT_PATH_AND_NAME = "DF_SCRIPT_PATH_AND_NAME";
     private static final String DF_DISPLAY_SCRIPT_OUTPUT = "DF_DISPLAY_SCRIPT_OUTPUT";
     private static final String DF_SCRIPT_CACHE_CONTENTS = "DF_SCRIPT_CACHE_CONTENTS";
 
-    private boolean _isRunning = false;
-    private Configuration _configuration;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
+    private Configuration configuration;
+    private String streamTitle;
 
     private static final ScriptEngineManager _scriptEngineManager = new ScriptEngineManager();
     private ScriptEngine _scriptEngine;
@@ -42,30 +47,42 @@ public class dfchBizExecScript implements MessageOutput
 
     private static final Logger LOG = LoggerFactory.getLogger(dfchBizExecScript.class);
 
-    @Override
-    public void initialize(final Configuration configuration)
+    @Inject
+    public dfchBizExecScript
+            (
+                    @NotNullable @Assisted Stream stream,
+                    @NotNullable @Assisted Configuration configuration
+            )
+            throws MessageOutputConfigurationException
     {
         try
         {
-            String s = "*** " + DF_PLUGIN_NAME + "::initialize()";
-            LOG.trace(s);
+            LOG.debug("Verifying configuration ...");
 
-            _configuration = configuration;
-            _isRunning = true;
+            this.configuration = configuration;
 
-            LOG.trace("DF_SCRIPT_ENGINE         : %s\r\n", _configuration.getString("DF_SCRIPT_ENGINE"));
-            LOG.trace("DF_SCRIPT_PATH_AND_NAME  : %s\r\n", _configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
-            LOG.trace("DF_DISPLAY_SCRIPT_OUTPUT : %b\r\n", _configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT"));
-            LOG.trace("DF_SCRIPT_CACHE_CONTENTS : %b\r\n", _configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"));
+            streamTitle = stream.getTitle();
+            if(null == streamTitle || streamTitle.isEmpty())
+            {
+                throw new MessageOutputConfigurationException(String.format("streamTitle: Parameter validation FAILED. Value cannot be null or empty."));
+            }
+            
+            LOG.trace("DF_SCRIPT_ENGINE         : %s\r\n", configuration.getString("DF_SCRIPT_ENGINE"));
+            LOG.trace("DF_SCRIPT_PATH_AND_NAME  : %s\r\n", configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
+            LOG.trace("DF_DISPLAY_SCRIPT_OUTPUT : %b\r\n", configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT"));
+            LOG.trace("DF_SCRIPT_CACHE_CONTENTS : %b\r\n", configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"));
 
-            _file = new File(_configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
-            _scriptEngine = _scriptEngineManager.getEngineByName(_configuration.getString("DF_SCRIPT_ENGINE"));
+            _file = new File(configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
+            _scriptEngine = _scriptEngineManager.getEngineByName(configuration.getString("DF_SCRIPT_ENGINE"));
             _scriptContext = _scriptEngine.getContext();
 
+            isRunning.set(true);
+
+            LOG.info("Verifying configuration SUCCEEDED.");
         }
         catch(Exception ex)
         {
-            _isRunning = false;
+            isRunning.set(false);
 
             LOG.error("*** " + DF_PLUGIN_NAME + "::write() - Exception\r\n" + ex.getMessage() + "\r\n");
             ex.printStackTrace();
@@ -75,19 +92,19 @@ public class dfchBizExecScript implements MessageOutput
     @Override
     public void stop()
     {
-        _isRunning = false;
+        isRunning.set(false);
     }
 
     @Override
     public boolean isRunning()
     {
-        return _isRunning;
+        return isRunning.get();
     }
 
     @Override
     public void write(Message msg) throws Exception
     {
-        if(!_isRunning) 
+        if(!isRunning.get())
         {
             return;
         }
@@ -97,15 +114,14 @@ public class dfchBizExecScript implements MessageOutput
             _stringWriter.getBuffer().setLength(0);
             _scriptContext.setWriter(_stringWriter);
             _scriptEngine.put("message", msg);
-            if(!_configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"))
+            if(!configuration.getBoolean("DF_SCRIPT_CACHE_CONTENTS"))
             {
-                _file = new File(_configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
+                _file = new File(configuration.getString("DF_SCRIPT_PATH_AND_NAME"));
             }
             Reader _reader = new FileReader(_file);
             _scriptEngine.eval(_reader);
-            if(_configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT"))
-            {
-                System.out.printf("%s\r\n", _stringWriter.toString());
+            if(configuration.getBoolean("DF_DISPLAY_SCRIPT_OUTPUT")) {
+                LOG.info(String.format("%s\r\n", _stringWriter.toString()));
                 LOG.trace("%s\r\n", _stringWriter.toString());
             }
 
@@ -120,7 +136,7 @@ public class dfchBizExecScript implements MessageOutput
     @Override
     public void write(List<Message> messages) throws Exception
     {
-        if(!_isRunning) return;
+        if(!isRunning.get()) return;
 
         for(Message msg : messages)
         {
@@ -128,78 +144,82 @@ public class dfchBizExecScript implements MessageOutput
         }
     }
 
-    @Override
-    public ConfigurationRequest getRequestedConfiguration()
+    public static class Config extends MessageOutput.Config
     {
-        final ConfigurationRequest configurationRequest = new ConfigurationRequest();
+        @Override
+        public ConfigurationRequest getRequestedConfiguration()
+        {
+            final ConfigurationRequest configurationRequest = new ConfigurationRequest();
 
-        configurationRequest.addField(new TextField
-                        (
-                                DF_SCRIPT_ENGINE
-                                ,
-                                "Script Engine"
-                                ,
-                                "javascript"
-                                ,
-                                "Specify the name of the script engine to use."
-                                ,
-                                ConfigurationField.Optional.NOT_OPTIONAL
-                        )
-        );
-        configurationRequest.addField(new TextField
-                        (
-                                DF_SCRIPT_PATH_AND_NAME
-                                ,
-                                "Script Path"
-                                ,
-                                "/opt/graylog2/plugin/bizDfchMessageOutputScript.js"
-                                ,
-                                "Specify the full path and name of the script to execute."
-                                ,
-                                ConfigurationField.Optional.NOT_OPTIONAL
-                        )
-        );
-        configurationRequest.addField(new BooleanField
-                        (
-                                DF_DISPLAY_SCRIPT_OUTPUT
-                                ,
-                                "Show script output"
-                                ,
-                                false
-                                ,
-                                "Show the script output on the console."
-                        )
-        );
-        configurationRequest.addField(new BooleanField
-                        (
-                                DF_SCRIPT_CACHE_CONTENTS
-                                ,
-                                "Cache script contents"
-                                ,
-                                true
-                                ,
-                                "Cache the contents of the script upon plugin initialisation."
-                        )
-        );
-        return configurationRequest;
+            configurationRequest.addField(new TextField
+                            (
+                                    DF_SCRIPT_ENGINE
+                                    ,
+                                    "Script Engine"
+                                    ,
+                                    "javascript"
+                                    ,
+                                    "Specify the name of the script engine to use."
+                                    ,
+                                    ConfigurationField.Optional.NOT_OPTIONAL
+                            )
+            );
+            configurationRequest.addField(new TextField
+                            (
+                                    DF_SCRIPT_PATH_AND_NAME
+                                    ,
+                                    "Script Path"
+                                    ,
+                                    "/opt/graylog2/plugin/bizDfchMessageOutputScript.js"
+                                    ,
+                                    "Specify the full path and name of the script to execute."
+                                    ,
+                                    ConfigurationField.Optional.NOT_OPTIONAL
+                            )
+            );
+            configurationRequest.addField(new BooleanField
+                            (
+                                    DF_DISPLAY_SCRIPT_OUTPUT
+                                    ,
+                                    "Show script output"
+                                    ,
+                                    false
+                                    ,
+                                    "Show the script output on the console."
+                            )
+            );
+            configurationRequest.addField(new BooleanField
+                            (
+                                    DF_SCRIPT_CACHE_CONTENTS
+                                    ,
+                                    "Cache script contents"
+                                    ,
+                                    true
+                                    ,
+                                    "Cache the contents of the script upon plugin initialisation."
+                            )
+            );
+            return configurationRequest;
+        }
     }
 
-    @Override
-    public String getName()
+    public interface Factory extends MessageOutput.Factory<dfchBizExecScript>
     {
-        return DF_PLUGIN_NAME;
-    }
+        @Override
+        dfchBizExecScript create(Stream stream, Configuration configuration);
 
-    @Override
-    public String getHumanName()
-    {
-        return DF_PLUGIN_HUMAN_NAME;
-    }
+        @Override
+        Config getConfig();
 
-    @Override
-    public String getLinkToDocs()
+        @Override
+        Descriptor getDescriptor();
+    }
+    public static class Descriptor extends MessageOutput.Descriptor
     {
-        return DF_PLUGIN_DOC_LINK;
+        public Descriptor()
+        {
+            super((new dfchBizExecScriptMetadata()).getName(), false, "", (new dfchBizExecScriptMetadata()).getDescription());
+        }
     }
 }
 
