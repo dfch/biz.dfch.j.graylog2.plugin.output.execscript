@@ -4,6 +4,7 @@ import org.graylog2.plugin.PluginMetaData;
 import org.graylog2.plugin.ServerStatus;
 import org.graylog2.plugin.Version;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -50,7 +51,7 @@ public class dfchBizExecScriptMetadata implements PluginMetaData
     @Override
     public Set<ServerStatus.Capability> getRequiredCapabilities()
     {
-        return java.util.EnumSet.of(ServerStatus.Capability.SERVER);
+        return Collections.emptySet();
     }
 }
 
