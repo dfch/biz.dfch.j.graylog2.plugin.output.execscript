@@ -14,7 +14,7 @@ public class dfchBizExecScriptMetadata implements PluginMetaData
     @Override
     public String getUniqueId()
     {
-        return "258d90ff-4dbe-4569-86d0-c55446b6550f";
+        return "biz.dfch.j.graylog2.plugin.output.dfchBizExecScriptPlugin";
     }
     @Override
     public String getName()
@@ -39,7 +39,7 @@ public class dfchBizExecScriptMetadata implements PluginMetaData
     @Override
     public String getDescription()
     {
-        return "d-fens SCRIPT Output. With this plugin you can call arbitrary scripts from within Graylog2";
+        return "d-fens SCRIPT Output. With this plugin you can call arbitrary scripts from within Graylog";
     }
     @Override
     public Version getRequiredVersion()
