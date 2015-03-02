@@ -1,9 +1,9 @@
 package biz.dfch.j.graylog2.plugin.output;
 
-import com.google.inject.multibindings.MapBinder;
+//import com.google.inject.multibindings.MapBinder;
 import org.graylog2.plugin.PluginConfigBean;
 import org.graylog2.plugin.PluginModule;
-import org.graylog2.plugin.outputs.MessageOutput;
+//import org.graylog2.plugin.outputs.MessageOutput;
 
 import java.util.Collections;
 import java.util.Set;
@@ -26,8 +26,11 @@ public class dfchBizExecScriptModule extends PluginModule {
     @Override
     protected void configure()
     {
-        final MapBinder<String, MessageOutput.Factory<? extends MessageOutput>> outputMapBinder = outputsMapBinder();
-        installOutput(outputMapBinder, dfchBizExecScript.class, dfchBizExecScript.Factory.class);
+        // use addMessageOutput instead of MapBinder/installOuput
+        // see https://github.com/Graylog2/graylog2-plugin-archetype/issues/2#issuecomment-75053951
+        addMessageOutput(dfchBizExecScript.class, dfchBizExecScript.Factory.class);
+//        final MapBinder<String, MessageOutput.Factory<? extends MessageOutput>> outputMapBinder = outputsMapBinder();
+//        installOutput(outputMapBinder, dfchBizExecScript.class, dfchBizExecScript.Factory.class);
     }
 }
 
