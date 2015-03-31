@@ -173,28 +173,15 @@ public class ExecScriptTest
         }
         
         message = new Message("my Message", "mySource", DateTime.now());
-<<<<<<< HEAD
-        assertEquals(true, true);
-=======
         message.addField("myField", "myValue");
->>>>>>> 2015-03-31; rrink; ADD: jython jar to directly support Python scripts
 
         Configuration configuration = new Configuration(map);
         Stream stream = new TestStream();
         
         dfchBizExecScript execScript = new dfchBizExecScript(stream, configuration);
-<<<<<<< HEAD
-        message.addField("myField", "myValue");
-        
-    }
-
-}
-=======
-
         // if we end up here instantiation was successful
         assertEquals(true, true);
     }
-
 }
 
 /**
