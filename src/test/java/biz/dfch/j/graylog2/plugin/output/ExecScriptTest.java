@@ -12,6 +12,7 @@ import org.junit.runners.MethodSorters;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.security.Key;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -54,7 +55,7 @@ public class ExecScriptTest
 
     // show that the script engine can properly instantiate a python scriptEngine
     @Test
-    public void doPythonTest() throws ProtocolException, IOException, MessageOutputConfigurationException
+    public void doPythonTest() throws ProtocolException, IOException, MessageOutputConfigurationException, Exception
     {
         String DF_SCRIPT_ENGINE = "DF_SCRIPT_ENGINE";
         String DF_SCRIPT_PATH_AND_NAME = "DF_SCRIPT_PATH_AND_NAME";
@@ -63,7 +64,7 @@ public class ExecScriptTest
         
         Map<String, Object> map = new HashMap<>();
         map.put("DF_SCRIPT_ENGINE", "python");
-        map.put("DF_SCRIPT_PATH_AND_NAME", "/opt/graylog/plugin/pythontest.py");
+        map.put("DF_SCRIPT_PATH_AND_NAME", System.getProperty("user.dir") + "/src/test/pythontest.py");
         map.put("DF_DISPLAY_SCRIPT_OUTPUT", true);
         map.put("DF_SCRIPT_CACHE_CONTENTS", false);
         
@@ -179,6 +180,139 @@ public class ExecScriptTest
         Stream stream = new TestStream();
         
         dfchBizExecScript execScript = new dfchBizExecScript(stream, configuration);
+        execScript.write(message);
+        // if we end up here instantiation was successful
+        assertEquals(true, true);
+    }
+
+    // show that the script engine can properly instantiate a Groovy scriptEngine
+    @Test
+    public void doGroovyTest() throws ProtocolException, IOException, MessageOutputConfigurationException, Exception
+    {
+        String DF_SCRIPT_ENGINE = "DF_SCRIPT_ENGINE";
+        String DF_SCRIPT_PATH_AND_NAME = "DF_SCRIPT_PATH_AND_NAME";
+        String DF_DISPLAY_SCRIPT_OUTPUT = "DF_DISPLAY_SCRIPT_OUTPUT";
+        String DF_SCRIPT_CACHE_CONTENTS = "DF_SCRIPT_CACHE_CONTENTS";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("DF_SCRIPT_ENGINE", "groovy");
+        map.put("DF_SCRIPT_PATH_AND_NAME", System.getProperty("user.dir") + "/src/test/groovytest.groovy");
+        map.put("DF_DISPLAY_SCRIPT_OUTPUT", true);
+        map.put("DF_SCRIPT_CACHE_CONTENTS", false);
+
+        class TestStream implements Stream
+        {
+            String id = "id";
+            String title = "title";
+            String description = "description";
+            Boolean disabled = false;
+            String contentPack = null;
+            Boolean isPaused = false;
+
+            @Override
+            public Map<String, Validator> getEmbeddedValidations(String s) {
+                return new HashMap<String, Validator>();
+            }
+
+            @Override
+            public Map<String, Validator> getValidations() {
+                return new HashMap<String, Validator>();
+            }
+
+            @Override
+            public Map<String, Object> getFields() {
+                return new HashMap<String, Object>();
+            }
+
+            public String getId()
+            {
+                return id;
+            }
+
+            public String getTitle()
+            {
+                return title;
+            }
+
+            public String getDescription()
+            {
+                return description;
+            }
+
+            public Boolean getDisabled()
+            {
+                return disabled;
+            }
+
+            public String getContentPack()
+            {
+                return contentPack;
+            }
+
+            public void setTitle(String var1)
+            {
+                title = var1;
+            }
+
+            public void setDescription(String var1)
+            {
+                description = var1;
+            }
+
+            public void setDisabled(Boolean var1)
+            {
+                disabled = var1;
+            }
+
+            public void setContentPack(String var1)
+            {
+                contentPack = var1;
+            }
+
+            public Boolean isPaused()
+            {
+                return isPaused;
+            }
+
+            public Map<String, List<String>> getAlertReceivers()
+            {
+                return new HashMap<String, List<String>>();
+            }
+
+            @Override
+            public Map<String, Object> asMap() {
+                return new HashMap<String, Object>();
+            }
+
+            public Map<String, Object> asMap(List<StreamRule> var1)
+            {
+                return new HashMap<String, Object>();
+            }
+
+            public String toString()
+            {
+                return "myMessage";
+            }
+
+            public List<StreamRule> getStreamRules()
+            {
+                return new ArrayList<StreamRule>();
+            }
+
+            public Set<Output> getOutputs()
+            {
+                return new HashSet<Output>();
+            }
+        }
+
+        message = new Message("my Message", "mySource", DateTime.now());
+        message.addField("myField", "myValue");
+
+        Configuration configuration = new Configuration(map);
+        Stream stream = new TestStream();
+
+        dfchBizExecScript execScript = new dfchBizExecScript(stream, configuration);
+        execScript.write(message);
         // if we end up here instantiation was successful
         assertEquals(true, true);
     }
