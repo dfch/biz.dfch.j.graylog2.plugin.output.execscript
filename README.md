@@ -9,12 +9,19 @@ This Graylog Output Plugin lets you run arbitrary scripts on a Graylog node.
 
 See [Creating a Graylog2 Output Plugin](http://d-fens.ch/2015/01/07/howto-creating-a-graylog2-output-plugin/) for further description and examples on how to use the plugin.
 
-You can [download the binary](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/files) [![Build Status](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/status.png)](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/latest) at our [drone.io](https://drone.io/github.com/dfch) account, which gets built every time we commit something to the master branch of the repository.
+You can [download the binary](https://github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/releases) [![Build Status](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/status.png)](https://drone.io/github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/latest).
 
-This plugin now works with Graylog v1.
+This plugin works with Graylog v1.
 
 Getting started for users
 -------------------------
+To use this plugin, copy the JAR into the Graylog plugin directory (which is defined in `Graylog.conf`) and restart the Graylog node and make sure you deploy the plugin to every Graylog node in your environment.
+
+You can then create scripts in any JSR.223 supported script engine (by default support for `javascript`, `Python` as `JPython` (v2.7-rc2) and Groovy (2.4.3) is installed). When configuring the plugin, you have to specify the full path to a script file that should be executed (and the name of the engine (i.e. `javascript`, `python` and `groovy`). 
+Every time the specified script is executed it will be passed the `message` of type [`org.graylog2.plugin.Message`](https://github.com/Graylog2/graylog2-server/blob/master/graylog2-plugin-interfaces/src/main/java/org/graylog2/plugin/Message.java) as a variable into the script scope from where you can process it according to your needs. 
+
+Getting started for developers
+------------------------------
 
 This project is using Maven and requires Java 7 or higher.
 
