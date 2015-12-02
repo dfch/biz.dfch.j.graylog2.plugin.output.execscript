@@ -1,6 +1,8 @@
 biz.dfch.j.graylog2.plugin.output.execscript 
 ============================================
 
+[![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/dfch/biz.dfch.j.graylog2.plugin.output.execscript/blob/master/LICENSE)
+
 Plugin: biz.dfch.j.graylog2.plugin.output.execscript
 
 d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
